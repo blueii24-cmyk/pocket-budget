@@ -1,0 +1,212 @@
+.bot-lane {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 0;
+  z-index: 15;
+  pointer-events: none;
+}
+
+.bot {
+  position: relative;
+  width: max-content;
+  image-rendering: pixelated;
+}
+
+.bot-lane .bot {
+  position: absolute;
+  left: 0;
+  bottom: 20px;
+  will-change: transform;
+}
+
+.bot-body,
+.bot svg {
+  display: block;
+}
+
+.bot svg {
+  shape-rendering: crispEdges;
+}
+
+.mascot {
+  position: relative;
+  min-width: 66px;
+  min-height: 66px;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.mascot .bot {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
+
+.mascot:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.bubble {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  z-index: 5;
+  width: max-content;
+  max-width: 170px;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  text-align: center;
+  font-size: 1.25rem;
+  line-height: 1.1;
+  color: var(--bg);
+  background: var(--text);
+  box-shadow: 0 0 0 3px var(--outline);
+  animation: bot-fade-in .25s steps(3) both;
+  transform: translateX(-50%);
+}
+
+.bubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: calc(50% - 4px);
+  width: 8px;
+  height: 8px;
+  margin-top: 3px;
+  background: var(--text);
+}
+
+.mascot .bubble {
+  top: 0;
+  right: 100%;
+  bottom: auto;
+  left: auto;
+  margin: 0 14px 0 0;
+  transform: none;
+}
+
+.mascot .bubble::after {
+  top: 14px;
+  left: 100%;
+  margin: 0 0 0 3px;
+}
+
+.bot-lane .bubble.edge-l {
+  left: 0;
+  transform: none;
+}
+
+.bot-lane .bubble.edge-r {
+  right: 0;
+  left: auto;
+  transform: none;
+}
+
+.bot-lane .bubble.edge-l::after {
+  left: 14px;
+}
+
+.bot-lane .bubble.edge-r::after {
+  right: 14px;
+  left: auto;
+}
+
+.mascot .bot-body {
+  animation: bot-bob 1.2s steps(1) infinite;
+}
+
+.bot.walking .bot-body {
+  animation: bot-bob .24s steps(1) infinite;
+}
+
+.bot.panic .bot-body {
+  animation: bot-jitter .16s steps(1) infinite;
+}
+
+.bot .bot-body[data-anim="hop"] {
+  animation: bot-hop .5s steps(1);
+}
+
+.bot .bot-body[data-anim="spin"] {
+  animation: bot-spin .5s steps(1) 2;
+}
+
+.bot .bot-body[data-anim="jitter"] {
+  animation: bot-jitter .16s steps(1) 3;
+}
+
+@keyframes bot-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes bot-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes bot-jitter {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, -2px); }
+  50% { transform: translate(2px, 0); }
+  75% { transform: translate(-2px, 2px); }
+}
+
+@keyframes bot-hop {
+  0%, 100% { transform: translateY(0); }
+  20%, 40% { transform: translateY(-12px); }
+  60% { transform: translateY(-24px); }
+  80% { transform: translateY(-12px); }
+}
+
+@keyframes bot-spin {
+  0%, 100% { transform: scaleX(1); }
+  25%, 75% { transform: scaleX(.3); }
+  50% { transform: scaleX(-1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bot-body,
+  .bubble {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    position: relative;
+  }
+
+  .topbar .brand {
+    padding-right: 58px;
+  }
+
+  .topbar .mascot {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 52px;
+    min-width: 52px;
+    height: 52px;
+    min-height: 52px;
+  }
+
+  .topbar .mascot .bot {
+    transform: scale(.78);
+    transform-origin: bottom right;
+  }
+
+  .topbar .mascot .bubble {
+    right: 44px;
+    top: 2px;
+    margin-right: 8px;
+    white-space: nowrap;
+  }
+
+  .bot-lane .bot {
+    bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  }
+}

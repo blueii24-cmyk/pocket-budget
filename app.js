@@ -258,7 +258,10 @@ function showError(el, message, inputs = []) {
   el.textContent = message;
   el.hidden = !message;
   inputs.forEach((i) => i.classList.toggle('invalid', !!message));
-  if (message) sfx.play('error');
+  if (message) {
+    sfx.play('error');
+    window.PocketBots?.error();
+  }
 }
 
 let toastTimer;
@@ -305,6 +308,7 @@ function renderDashboard() {
   setValue($('val-aside'), formatRs(c.setAside));
   $('sub-aside').textContent = `Bus ${formatRs(m.busFare)} + budgets ${formatRs(c.budgetsTotal)}`;
   setValue($('val-saving'), formatRs(m.savingsGoal));
+  window.PocketBots?.setMood(c.safeToSpend < 0 ? 'panic' : 'happy');
 
   $('expense-total').textContent = m.expenses.length ? `· ${formatRs(c.expensesTotal)} total` : '';
   const list = $('expense-list');
@@ -491,6 +495,7 @@ function saveSetup(e) {
   renderAll();
   toast('Saved');
   sfx.play('save');
+  window.PocketBots?.celebrate('Plan saved!');
 }
 
 function addExpense(e) {
@@ -514,12 +519,15 @@ function addExpense(e) {
   nameIn.focus();
   renderAll();
   playSpendSound(safeBefore, 'coin');
+  if (compute(getMonth()).safeToSpend < 0) window.PocketBots?.panic();
+  else window.PocketBots?.celebrate('Logged it!');
 }
 
 function deleteExpense(id) {
   updateMonth((m) => { m.expenses = m.expenses.filter((x) => x.id !== id); });
   renderAll();
   sfx.play('del');
+  window.PocketBots?.delete();
 }
 
 function addCartItem(e) {
@@ -542,12 +550,14 @@ function addCartItem(e) {
   nameIn.focus();
   renderAll();
   sfx.play('blip');
+  window.PocketBots?.celebrate('New loot!');
 }
 
 function deleteCartItem(id) {
   updateMonth((m) => { m.cart = m.cart.filter((x) => x.id !== id); });
   renderAll();
   sfx.play('del');
+  window.PocketBots?.delete();
 }
 
 function buyItem(id) {
@@ -565,6 +575,8 @@ function buyItem(id) {
   if (bought) {
     toast(`"${bought.name}" moved to expenses`);
     playSpendSound(safeBefore, 'buy');
+    if (compute(getMonth()).safeToSpend < 0) window.PocketBots?.panic();
+    else window.PocketBots?.celebrate('Ka-ching!');
   }
 }
 

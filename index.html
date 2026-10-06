@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="bot_animation/bot-animations.css">
 </head>
 <body>
   <div class="app">
@@ -17,6 +18,7 @@
         <span id="brand-coin" class="sprite coin" aria-hidden="true"></span>
         <h1 class="title">Pocket Budget</h1>
       </div>
+      <div id="mascot" class="mascot" role="button" tabindex="0" aria-label="Poke the helper bot"></div>
       <div class="top-controls">
         <div class="month-picker" role="group" aria-label="Select month">
           <button id="month-prev" class="icon-btn" type="button" aria-label="Previous month">&lt;</button>
@@ -167,6 +169,7 @@
   </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <div id="bot-lane" class="bot-lane" aria-hidden="true"></div>
 
   <div id="splash" class="splash" role="dialog" aria-label="Start screen">
     <div class="splash-inner">
@@ -176,6 +179,7 @@
       <button id="start-btn" class="btn btn-primary" type="button">Press Start</button>
     </div>
   </div>
+  <script src="bot_animation/bot-engine.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
