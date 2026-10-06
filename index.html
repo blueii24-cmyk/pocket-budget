@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pocket Money Budget</title>
+  <meta name="description" content="A simple pocket-money budgeting app: set a monthly budget, log expenses and check whether you can afford the things in your cart.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span id="brand-coin" class="sprite coin" aria-hidden="true"></span>
+        <h1 class="title">Pocket Budget</h1>
+      </div>
+      <div class="top-controls">
+        <div class="month-picker" role="group" aria-label="Select month">
+          <button id="month-prev" class="icon-btn" type="button" aria-label="Previous month">&lt;</button>
+          <span id="month-label" class="month-label" aria-live="polite"></span>
+          <button id="month-next" class="icon-btn" type="button" aria-label="Next month">&gt;</button>
+        </div>
+        <button id="sound-toggle" class="btn btn-ghost btn-small" type="button" aria-pressed="true" aria-label="Toggle sound">SND: ON</button>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist" aria-label="Screens">
+      <button id="tab-setup" class="tab" role="tab" type="button" data-tab="setup" aria-selected="false">Setup</button>
+      <button id="tab-dashboard" class="tab" role="tab" type="button" data-tab="dashboard" aria-selected="true">Dashboard</button>
+      <button id="tab-cart" class="tab" role="tab" type="button" data-tab="cart" aria-selected="false">Cart</button>
+    </nav>
+
+    <main>
+      <!-- SETUP -->
+      <section id="panel-setup" class="panel" role="tabpanel" aria-labelledby="tab-setup" hidden>
+        <form id="setup-form" class="card" novalidate>
+          <h2 class="card-title">Monthly plan</h2>
+
+          <label class="field" for="in-pocket">
+            <span class="field-label">Pocket money</span>
+            <div class="input-wrap"><span class="prefix">Rs</span>
+              <input id="in-pocket" type="number" inputmode="decimal" min="0" step="any" placeholder="0">
+            </div>
+          </label>
+
+          <label class="field" for="in-bus">
+            <span class="field-label">Bus fare (total for the month)</span>
+            <div class="input-wrap"><span class="prefix">Rs</span>
+              <input id="in-bus" type="number" inputmode="decimal" min="0" step="any" placeholder="0">
+            </div>
+          </label>
+
+          <label class="field" for="in-saving">
+            <span class="field-label">Savings goal</span>
+            <div class="input-wrap"><span class="prefix">Rs</span>
+              <input id="in-saving" type="number" inputmode="decimal" min="0" step="any" placeholder="0">
+            </div>
+          </label>
+
+          <h3 class="section-title">Other budgets</h3>
+          <p class="hint">Set money aside for things like food or recharge.</p>
+          <div id="budget-rows" class="rows"></div>
+          <button id="add-budget" class="btn btn-ghost" type="button">+ Add category</button>
+
+          <div class="preview">
+            <span>Left after plan (before expenses)</span>
+            <strong id="setup-preview">Rs 0</strong>
+          </div>
+
+          <p id="setup-error" class="error" role="alert" hidden></p>
+          <button id="save-setup" class="btn btn-primary" type="submit">Save</button>
+        </form>
+      </section>
+
+      <!-- DASHBOARD -->
+      <section id="panel-dashboard" class="panel" role="tabpanel" aria-labelledby="tab-dashboard">
+        <div class="cards">
+          <article id="card-safe" class="card stat stat-safe">
+            <h2 class="stat-label">Safe to spend</h2>
+            <p id="val-safe" class="stat-value">Rs 0</p>
+            <p id="sub-safe" class="stat-sub"></p>
+          </article>
+          <article class="card stat">
+            <h2 class="stat-label">Set aside</h2>
+            <p id="val-aside" class="stat-value">Rs 0</p>
+            <p id="sub-aside" class="stat-sub"></p>
+          </article>
+          <article class="card stat">
+            <h2 class="stat-label">Saving</h2>
+            <p id="val-saving" class="stat-value">Rs 0</p>
+            <p class="stat-sub">Goal for this month</p>
+          </article>
+        </div>
+
+        <div class="card split">
+          <h2 id="split-title" class="card-title">Where your month goes</h2>
+          <div id="split-bar" class="split-bar" role="img" aria-labelledby="split-title">
+            <span data-seg="bus"></span><span data-seg="budgets"></span><span data-seg="saving"></span><span data-seg="spent"></span><span data-seg="safe"></span>
+          </div>
+          <ul class="legend">
+            <li><i data-seg="bus"></i>Bus <b id="lg-bus"></b></li>
+            <li><i data-seg="budgets"></i>Budgets <b id="lg-budgets"></b></li>
+            <li><i data-seg="saving"></i>Saving <b id="lg-saving"></b></li>
+            <li><i data-seg="spent"></i>Spent <b id="lg-spent"></b></li>
+            <li><i data-seg="safe"></i>Safe <b id="lg-safe"></b></li>
+          </ul>
+        </div>
+
+        <form id="expense-form" class="card" novalidate>
+          <h2 class="card-title">Log an expense</h2>
+          <div class="inline-form">
+            <input id="exp-name" type="text" placeholder="What was it?" maxlength="60" aria-label="Expense name" autocomplete="off">
+            <div class="input-wrap"><span class="prefix">Rs</span>
+              <input id="exp-amount" type="number" inputmode="decimal" min="0" step="any" placeholder="0" aria-label="Expense amount">
+            </div>
+            <button id="add-expense" class="btn btn-primary" type="submit">Add</button>
+          </div>
+          <p id="expense-error" class="error" role="alert" hidden></p>
+        </form>
+
+        <div class="card">
+          <h2 class="card-title">Expenses <span id="expense-total" class="muted"></span></h2>
+          <ul id="expense-list" class="list"></ul>
+          <p id="expense-empty" class="empty">No expenses logged yet.</p>
+        </div>
+      </section>
+
+      <!-- CART -->
+      <section id="panel-cart" class="panel" role="tabpanel" aria-labelledby="tab-cart" hidden>
+        <form id="cart-form" class="card" novalidate>
+          <h2 class="card-title">Add to cart</h2>
+          <div class="inline-form">
+            <input id="cart-name" type="text" placeholder="Item name" maxlength="60" aria-label="Item name" autocomplete="off">
+            <div class="input-wrap"><span class="prefix">Rs</span>
+              <input id="cart-price" type="number" inputmode="decimal" min="0" step="any" placeholder="0" aria-label="Item price">
+            </div>
+            <button id="add-cart" class="btn btn-primary" type="submit">Add</button>
+          </div>
+          <p id="cart-error" class="error" role="alert" hidden></p>
+        </form>
+
+        <div class="card cart-summary">
+          <div>
+            <span class="summary-label">Cart total</span>
+            <strong id="cart-total">Rs 0</strong>
+          </div>
+          <div>
+            <span class="summary-label">Safe to spend now</span>
+            <strong id="cart-safe-now">Rs 0</strong>
+          </div>
+          <div>
+            <span class="summary-label">After buying all affordable</span>
+            <strong id="cart-safe-after">Rs 0</strong>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Items <span class="muted">(checked in order added)</span></h2>
+          <ul id="cart-list" class="list"></ul>
+          <p id="cart-empty" class="empty">Your cart is empty.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <div id="splash" class="splash" role="dialog" aria-label="Start screen">
+    <div class="splash-inner">
+      <span id="splash-coin" class="sprite splash-coin" aria-hidden="true"></span>
+      <h2 class="splash-title">Pocket<br>Budget</h2>
+      <p class="splash-sub">Rs Edition</p>
+      <button id="start-btn" class="btn btn-primary" type="button">Press Start</button>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
